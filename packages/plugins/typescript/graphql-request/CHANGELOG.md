@@ -1,5 +1,44 @@
 # @graphql-codegen/typescript-graphql-request
 
+## 6.2.0
+
+### Minor Changes
+
+- [#549](https://github.com/dotansimha/graphql-code-generator-community/pull/549)
+  [`ad8258c`](https://github.com/dotansimha/graphql-code-generator-community/commit/ad8258c66edd732a1b5ef2536021f06e44219daa)
+  Thanks [@pentla](https://github.com/pentla)! - Fix TypeScript error when moduleResolution is
+  "nodenext" or "bundler"
+
+### Patch Changes
+
+- [#559](https://github.com/dotansimha/graphql-code-generator-community/pull/559)
+  [`64c2c10`](https://github.com/dotansimha/graphql-code-generator-community/commit/64c2c10e82b1efe6a8ea7a3c4d9ed5b340945503)
+  Thanks [@mtlewis](https://github.com/mtlewis)! - Fix unused parameter in generated code which
+  caused TS errors for users of the package.
+
+## 6.1.0
+
+### Minor Changes
+
+- [#512](https://github.com/dotansimha/graphql-code-generator-community/pull/512)
+  [`34cdb37`](https://github.com/dotansimha/graphql-code-generator-community/commit/34cdb37247fdf8002176b0e63e8c5bce32f02f24)
+  Thanks [@axe-me](https://github.com/axe-me)! - pass variables to wrapper function
+
+### Patch Changes
+
+- [#517](https://github.com/dotansimha/graphql-code-generator-community/pull/517)
+  [`bcd2324`](https://github.com/dotansimha/graphql-code-generator-community/commit/bcd232493d205d21b57e98b8ce83e74b081ad13f)
+  Thanks [@benjie](https://github.com/benjie)! - Add `.mts` and `.cts` as allowable extensions to
+  graphql-request
+
+## 6.0.1
+
+### Patch Changes
+
+- [#462](https://github.com/dotansimha/graphql-code-generator-community/pull/462)
+  [`f7170557e`](https://github.com/dotansimha/graphql-code-generator-community/commit/f7170557ed325af4224447ec041fc10f04ccc5b1)
+  Thanks [@yshrsmz](https://github.com/yshrsmz)! - fix(graphql-request): add import for GraphQLError
+
 ## 6.0.0
 
 ### Major Changes

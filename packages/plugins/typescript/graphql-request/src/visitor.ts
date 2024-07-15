@@ -16,7 +16,7 @@ export interface GraphQLRequestPluginConfig extends ClientSideBasePluginConfig {
 }
 
 const additionalExportedTypes = `
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 `;
 
 export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
@@ -45,17 +45,22 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
     autoBind(this);
 
     const typeImport = this.config.useTypeImports ? 'import type' : 'import';
-    const fileExtension = this.config.emitLegacyCommonJSImports ? '' : '.js';
-    const buildPath = this.config.emitLegacyCommonJSImports ? 'cjs' : 'esm';
 
-    this._additionalImports.push(`${typeImport} { GraphQLClient } from 'graphql-request';`);
     this._additionalImports.push(
-      `${typeImport} { GraphQLClientRequestHeaders } from 'graphql-request/build/${buildPath}/types${fileExtension}';`,
+      `${typeImport} { GraphQLClient, RequestOptions } from 'graphql-request';`,
     );
 
-    if (this.config.rawRequest && this.config.documentMode !== DocumentMode.string) {
-      this._additionalImports.push(`import { print } from 'graphql'`);
+    if (this.config.rawRequest) {
+      if (this.config.documentMode !== DocumentMode.string) {
+        this._additionalImports.push(`import { GraphQLError, print } from 'graphql'`);
+      } else {
+        this._additionalImports.push(`import { GraphQLError } from 'graphql'`);
+      }
     }
+
+    this._additionalImports.push(
+      `type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];`,
+    );
 
     this._externalImportPrefix = this.config.importOperationTypesFrom
       ? `${this.config.importOperationTypesFrom}.`
@@ -134,7 +139,7 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
           }; headers: Headers; status: number; }> {
     return withWrapper((wrappedRequestHeaders) => client.rawRequest<${
       o.operationResultType
-    }>(${docArg}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}');
+    }>(${docArg}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}', variables);
 }`;
         }
         return `${operationName}(variables${optionalVariables ? '?' : ''}: ${
@@ -142,7 +147,7 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
         }, requestHeaders?: GraphQLClientRequestHeaders): Promise<${o.operationResultType}> {
   return withWrapper((wrappedRequestHeaders) => client.request<${
     o.operationResultType
-  }>(${docVarName}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}');
+  }>(${docVarName}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}', variables);
 }`;
       })
       .filter(Boolean)
@@ -150,7 +155,7 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
 
     return `${additionalExportedTypes}
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
 ${extraVariables.join('\n')}
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {

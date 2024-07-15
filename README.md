@@ -37,6 +37,8 @@ plugins:
   `@graphql-codegen/typescript-nhost`
 - [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-type-graphql.svg)](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-type-graphql) -
   `@graphql-codegen/typescript-type-graphql`
+- [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-enum-array.svg)](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-enum-array) -
+  `@graphql-codegen/typescript-enum-array`
 - [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Fcli.svg)](htjsdocs://badge.fury.io/js/%40graphql-codegen%2Fjsdoc) -
   `@graphql-codegen/jsdoc`
 - [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-vue-urql.svg)](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-vue-urql) -
@@ -61,6 +63,8 @@ plugins:
   `@graphql-codegen/java-resolvers`
 - [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Fjava-apollo-android.svg)](https://badge.fury.io/js/%40graphql-codegen%2Fjava-apollo-android) -
   `@graphql-codegen/java-apollo-android`
+- [![npm version](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-nest.svg)](https://badge.fury.io/js/%40graphql-codegen%2Ftypescript-nest) -
+  `@graphql-codegen/typescript-nest`
 
 ### Getting started with codegen
 

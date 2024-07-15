@@ -217,6 +217,31 @@ export interface ReactApolloRawPluginConfig extends RawClientSideBasePluginConfi
    * ```
    */
   withMutationOptionsType?: boolean;
+
+  /**
+   * @description Whether or not to include wrappers for Apollo's useFragment hook.
+   * @default false
+   *
+   * @exampleMarkdown
+   * ```ts filename="codegen.ts"
+   *  import type { CodegenConfig } from '@graphql-codegen/cli';
+   *
+   *  const config: CodegenConfig = {
+   *    // ...
+   *    generates: {
+   *      'path/to/file.ts': {
+   *        plugins: ['typescript', 'typescript-operations', 'typescript-react-apollo'],
+   *        config: {
+   *          withFragmentHooks: true
+   *        },
+   *      },
+   *    },
+   *  };
+   *  export default config;
+   * ```
+   */
+  withFragmentHooks?: boolean;
+
   /**
    * @description Allows you to enable/disable the generation of docblocks in generated code.
    * Some IDE's (like VSCode) add extra inline information with docblocks, you can disable this feature if your preferred IDE does not.
@@ -241,8 +266,21 @@ export interface ReactApolloRawPluginConfig extends RawClientSideBasePluginConfi
    * ```
    */
   addDocBlocks?: boolean;
-
-  defaultBaseOptions?: { [key: string]: string };
+  /**
+   * @description Configure default mutation and query hook options.
+   */
+  defaultBaseOptions?: ReactApolloPluginConfigDefaultBaseOptions;
 
   hooksSuffix?: string;
+}
+
+export interface ReactApolloPluginConfigDefaultBaseOptions {
+  awaitRefetchQueries?: boolean;
+  errorPolicy?: string;
+  fetchPolicy?: string;
+  ignoreResults?: boolean;
+  notifyOnNetworkStatusChange?: boolean;
+  returnPartialData?: boolean;
+  ssr?: boolean;
+  [key: string]: any;
 }

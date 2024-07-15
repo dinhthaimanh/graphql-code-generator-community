@@ -423,7 +423,8 @@ export function useOnCommentAddedSubscription(
   baseOptions: Apollo.SubscriptionHookOptions<
     OnCommentAddedSubscriptionMyOperation,
     OnCommentAddedSubscriptionVariables
-  >,
+  > &
+    ({ variables: OnCommentAddedSubscriptionVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useSubscription<
@@ -484,7 +485,8 @@ export const CommentDocument = gql`
  * });
  */
 export function useCommentQuery(
-  baseOptions: Apollo.QueryHookOptions<CommentQueryMyOperation, CommentQueryVariables>,
+  baseOptions: Apollo.QueryHookOptions<CommentQueryMyOperation, CommentQueryVariables> &
+    ({ variables: CommentQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<CommentQueryMyOperation, CommentQueryVariables>(CommentDocument, options);
@@ -498,8 +500,18 @@ export function useCommentLazyQuery(
     options,
   );
 }
+export function useCommentSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<CommentQueryMyOperation, CommentQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<CommentQueryMyOperation, CommentQueryVariables>(
+    CommentDocument,
+    options,
+  );
+}
 export type CommentQueryHookResult = ReturnType<typeof useCommentQuery>;
 export type CommentLazyQueryHookResult = ReturnType<typeof useCommentLazyQuery>;
+export type CommentSuspenseQueryHookResult = ReturnType<typeof useCommentSuspenseQuery>;
 export type CommentQueryResult = Apollo.QueryResult<CommentQueryMyOperation, CommentQueryVariables>;
 export const CurrentUserForProfileDocument = gql`
   query CurrentUserForProfile {
@@ -549,9 +561,24 @@ export function useCurrentUserForProfileLazyQuery(
     CurrentUserForProfileQueryVariables
   >(CurrentUserForProfileDocument, options);
 }
+export function useCurrentUserForProfileSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    CurrentUserForProfileQueryMyOperation,
+    CurrentUserForProfileQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    CurrentUserForProfileQueryMyOperation,
+    CurrentUserForProfileQueryVariables
+  >(CurrentUserForProfileDocument, options);
+}
 export type CurrentUserForProfileQueryHookResult = ReturnType<typeof useCurrentUserForProfileQuery>;
 export type CurrentUserForProfileLazyQueryHookResult = ReturnType<
   typeof useCurrentUserForProfileLazyQuery
+>;
+export type CurrentUserForProfileSuspenseQueryHookResult = ReturnType<
+  typeof useCurrentUserForProfileSuspenseQuery
 >;
 export type CurrentUserForProfileQueryResult = Apollo.QueryResult<
   CurrentUserForProfileQueryMyOperation,
@@ -588,7 +615,8 @@ export const FeedDocument = gql`
  * });
  */
 export function useFeedQuery(
-  baseOptions: Apollo.QueryHookOptions<FeedQueryMyOperation, FeedQueryVariables>,
+  baseOptions: Apollo.QueryHookOptions<FeedQueryMyOperation, FeedQueryVariables> &
+    ({ variables: FeedQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<FeedQueryMyOperation, FeedQueryVariables>(FeedDocument, options);
@@ -599,8 +627,15 @@ export function useFeedLazyQuery(
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<FeedQueryMyOperation, FeedQueryVariables>(FeedDocument, options);
 }
+export function useFeedSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<FeedQueryMyOperation, FeedQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<FeedQueryMyOperation, FeedQueryVariables>(FeedDocument, options);
+}
 export type FeedQueryHookResult = ReturnType<typeof useFeedQuery>;
 export type FeedLazyQueryHookResult = ReturnType<typeof useFeedLazyQuery>;
+export type FeedSuspenseQueryHookResult = ReturnType<typeof useFeedSuspenseQuery>;
 export type FeedQueryResult = Apollo.QueryResult<FeedQueryMyOperation, FeedQueryVariables>;
 export const SubmitRepositoryDocument = gql`
   mutation submitRepository($repoFullName: String!) {

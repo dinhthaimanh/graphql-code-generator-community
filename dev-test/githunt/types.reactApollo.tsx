@@ -423,7 +423,8 @@ export function useOnCommentAddedSubscription(
   baseOptions: Apollo.SubscriptionHookOptions<
     OnCommentAddedSubscription,
     OnCommentAddedSubscriptionVariables
-  >,
+  > &
+    ({ variables: OnCommentAddedSubscriptionVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useSubscription<OnCommentAddedSubscription, OnCommentAddedSubscriptionVariables>(
@@ -484,7 +485,8 @@ export const CommentDocument = gql`
  * });
  */
 export function useCommentQuery(
-  baseOptions: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables>,
+  baseOptions: Apollo.QueryHookOptions<CommentQuery, CommentQueryVariables> &
+    ({ variables: CommentQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<CommentQuery, CommentQueryVariables>(CommentDocument, options);
@@ -495,8 +497,15 @@ export function useCommentLazyQuery(
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<CommentQuery, CommentQueryVariables>(CommentDocument, options);
 }
+export function useCommentSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<CommentQuery, CommentQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<CommentQuery, CommentQueryVariables>(CommentDocument, options);
+}
 export type CommentQueryHookResult = ReturnType<typeof useCommentQuery>;
 export type CommentLazyQueryHookResult = ReturnType<typeof useCommentLazyQuery>;
+export type CommentSuspenseQueryHookResult = ReturnType<typeof useCommentSuspenseQuery>;
 export type CommentQueryResult = Apollo.QueryResult<CommentQuery, CommentQueryVariables>;
 export const CurrentUserForProfileDocument = gql`
   query CurrentUserForProfile {
@@ -546,9 +555,24 @@ export function useCurrentUserForProfileLazyQuery(
     options,
   );
 }
+export function useCurrentUserForProfileSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    CurrentUserForProfileQuery,
+    CurrentUserForProfileQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<CurrentUserForProfileQuery, CurrentUserForProfileQueryVariables>(
+    CurrentUserForProfileDocument,
+    options,
+  );
+}
 export type CurrentUserForProfileQueryHookResult = ReturnType<typeof useCurrentUserForProfileQuery>;
 export type CurrentUserForProfileLazyQueryHookResult = ReturnType<
   typeof useCurrentUserForProfileLazyQuery
+>;
+export type CurrentUserForProfileSuspenseQueryHookResult = ReturnType<
+  typeof useCurrentUserForProfileSuspenseQuery
 >;
 export type CurrentUserForProfileQueryResult = Apollo.QueryResult<
   CurrentUserForProfileQuery,
@@ -584,7 +608,10 @@ export const FeedDocument = gql`
  *   },
  * });
  */
-export function useFeedQuery(baseOptions: Apollo.QueryHookOptions<FeedQuery, FeedQueryVariables>) {
+export function useFeedQuery(
+  baseOptions: Apollo.QueryHookOptions<FeedQuery, FeedQueryVariables> &
+    ({ variables: FeedQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<FeedQuery, FeedQueryVariables>(FeedDocument, options);
 }
@@ -594,8 +621,15 @@ export function useFeedLazyQuery(
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<FeedQuery, FeedQueryVariables>(FeedDocument, options);
 }
+export function useFeedSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<FeedQuery, FeedQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<FeedQuery, FeedQueryVariables>(FeedDocument, options);
+}
 export type FeedQueryHookResult = ReturnType<typeof useFeedQuery>;
 export type FeedLazyQueryHookResult = ReturnType<typeof useFeedLazyQuery>;
+export type FeedSuspenseQueryHookResult = ReturnType<typeof useFeedSuspenseQuery>;
 export type FeedQueryResult = Apollo.QueryResult<FeedQuery, FeedQueryVariables>;
 export const SubmitRepositoryDocument = gql`
   mutation submitRepository($repoFullName: String!) {

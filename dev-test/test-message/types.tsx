@@ -122,7 +122,8 @@ export type EscalateMutation = {
  * });
  */
 export function useGetMessagesQuery(
-  baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>,
+  baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables> &
+    ({ variables: GetMessagesQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(
@@ -139,8 +140,18 @@ export function useGetMessagesLazyQuery(
     options,
   );
 }
+export function useGetMessagesSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<GetMessagesQuery, GetMessagesQueryVariables>(
+    Operations.GetMessages,
+    options,
+  );
+}
 export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
 export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesSuspenseQueryHookResult = ReturnType<typeof useGetMessagesSuspenseQuery>;
 export type GetMessagesQueryResult = Apollo.QueryResult<
   GetMessagesQuery,
   GetMessagesQueryVariables

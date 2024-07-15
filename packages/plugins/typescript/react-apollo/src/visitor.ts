@@ -10,7 +10,7 @@ import {
   LoadedFragment,
   OMIT_TYPE,
 } from '@graphql-codegen/visitor-plugin-common';
-import { ReactApolloRawPluginConfig } from './config.js';
+import { ReactApolloPluginConfigDefaultBaseOptions, ReactApolloRawPluginConfig } from './config.js';
 
 const APOLLO_CLIENT_3_UNIFIED_PACKAGE = `@apollo/client`;
 const GROUPED_APOLLO_CLIENT_3_IDENTIFIER = 'Apollo';
@@ -21,6 +21,7 @@ export interface ReactApolloPluginConfig extends ClientSideBasePluginConfig {
   withHooks: boolean;
   withMutationFn: boolean;
   withRefetchFn: boolean;
+  withFragmentHooks?: boolean;
   apolloReactCommonImportFrom: string;
   apolloReactComponentsImportFrom: string;
   apolloReactHocImportFrom: string;
@@ -30,7 +31,7 @@ export interface ReactApolloPluginConfig extends ClientSideBasePluginConfig {
   withResultType: boolean;
   withMutationOptionsType: boolean;
   addDocBlocks: boolean;
-  defaultBaseOptions: { [key: string]: string };
+  defaultBaseOptions: ReactApolloPluginConfigDefaultBaseOptions;
   hooksSuffix: string;
 }
 
@@ -62,6 +63,7 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
       withHooks: getConfigValue(rawConfig.withHooks, true),
       withMutationFn: getConfigValue(rawConfig.withMutationFn, true),
       withRefetchFn: getConfigValue(rawConfig.withRefetchFn, false),
+      withFragmentHooks: getConfigValue(rawConfig.withFragmentHooks, false),
       apolloReactCommonImportFrom: getConfigValue(
         rawConfig.apolloReactCommonImportFrom,
         rawConfig.reactApolloVersion === 2
@@ -192,8 +194,12 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
     const baseImports = super.getImports();
     const hasOperations = this._collectedOperations.length > 0;
 
-    if (!hasOperations) {
+    if (!hasOperations && !this.config.withFragmentHooks) {
       return baseImports;
+    }
+
+    if (this.config.withFragmentHooks) {
+      return [...baseImports, this.getApolloReactHooksImport(false), ...Array.from(this.imports)];
     }
 
     return [...baseImports, ...Array.from(this.imports)];
@@ -369,6 +375,7 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
   ): string {
     const nodeName = node.name?.value ?? '';
     const suffix = this._getHookSuffix(nodeName, operationType);
+    const shouldEnforceRequiredVariables = hasRequiredVariables && operationType !== 'Mutation';
     const operationName: string =
       this.convertName(nodeName, {
         suffix,
@@ -379,11 +386,14 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
     this.imports.add(this.getApolloReactCommonImport(true));
     this.imports.add(this.getApolloReactHooksImport(false));
     this.imports.add(this.getDefaultOptions());
-
     const hookFns = [
       `export function use${operationName}(baseOptions${
-        hasRequiredVariables && operationType !== 'Mutation' ? '' : '?'
-      }: ${this.getApolloReactHooksIdentifier()}.${operationType}HookOptions<${operationResultType}, ${operationVariablesTypes}>) {
+        shouldEnforceRequiredVariables ? '' : '?'
+      }: ${this.getApolloReactHooksIdentifier()}.${operationType}HookOptions<${operationResultType}, ${operationVariablesTypes}>${
+        !shouldEnforceRequiredVariables
+          ? ''
+          : ` & ({ variables: ${operationVariablesTypes}; skip?: boolean; } | { skip: boolean; }) `
+      }) {
         const options = {...defaultOptions, ...baseOptions}
         return ${this.getApolloReactHooksIdentifier()}.use${operationType}<${operationResultType}, ${operationVariablesTypes}>(${this.getDocumentNodeVariable(
         node,
@@ -417,6 +427,25 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
       );
       hookResults.push(
         `export type ${lazyOperationName}HookResult = ReturnType<typeof use${lazyOperationName}>;`,
+      );
+
+      const suspenseOperationName: string =
+        this.convertName(nodeName, {
+          suffix: pascalCase('SuspenseQuery'),
+          useTypesPrefix: false,
+        }) + this.config.hooksSuffix;
+
+      hookFns.push(
+        `export function use${suspenseOperationName}(baseOptions?: ${this.getApolloReactHooksIdentifier()}.SuspenseQueryHookOptions<${operationResultType}, ${operationVariablesTypes}>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ${this.getApolloReactHooksIdentifier()}.useSuspenseQuery<${operationResultType}, ${operationVariablesTypes}>(${this.getDocumentNodeVariable(
+          node,
+          documentVariableName,
+        )}, options);
+        }`,
+      );
+      hookResults.push(
+        `export type ${suspenseOperationName}HookResult = ReturnType<typeof use${suspenseOperationName}>;`,
       );
     }
 
@@ -563,5 +592,59 @@ export class ReactApolloVisitor extends ClientSideBaseVisitor<
     return [mutationFn, component, hoc, hooks, resultType, mutationOptionsType, refetchFn]
       .filter(a => a)
       .join('\n');
+  }
+
+  public get fragments(): string {
+    const fragments = super.fragments;
+
+    if (this._fragments.length === 0 || !this.config.withFragmentHooks) {
+      return fragments;
+    }
+
+    const operationType = 'Fragment';
+
+    const hookFns: string[] = [fragments];
+
+    for (const fragment of this._fragments.values()) {
+      if (fragment.isExternal) {
+        continue;
+      }
+
+      const nodeName = fragment.name ?? '';
+      const suffix = this._getHookSuffix(nodeName, operationType);
+      const fragmentName: string =
+        this.convertName(nodeName, {
+          suffix,
+          useTypesPrefix: false,
+          useTypesSuffix: false,
+        }) + this.config.hooksSuffix;
+
+      const operationTypeSuffix: string = this.getOperationSuffix(fragmentName, operationType);
+
+      const operationResultType: string = this.convertName(nodeName, {
+        suffix: operationTypeSuffix + this._parsedConfig.operationResultSuffix,
+      });
+
+      const IDType = this.scalars.ID ?? 'string';
+
+      const hook = `export function use${fragmentName}<F = { id: ${IDType} }>(identifiers: F) {
+  return ${this.getApolloReactHooksIdentifier()}.use${operationType}<${operationResultType}>({
+    fragment: ${nodeName}${this.config.fragmentVariableSuffix},
+    fragmentName: "${nodeName}",
+    from: {
+      __typename: "${fragment.onType}",
+      ...identifiers,
+    },
+  });
+}`;
+
+      const hookResults = [
+        `export type ${fragmentName}HookResult = ReturnType<typeof use${fragmentName}>;`,
+      ];
+
+      hookFns.push([hook, hookResults].join('\n'));
+    }
+
+    return hookFns.join('\n');
   }
 }

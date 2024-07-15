@@ -1,5 +1,36 @@
 # @graphql-codegen/typescript-react-apollo
 
+## 4.3.0
+
+### Minor Changes
+
+- [#620](https://github.com/dotansimha/graphql-code-generator-community/pull/620)
+  [`3e2c8de`](https://github.com/dotansimha/graphql-code-generator-community/commit/3e2c8de259d2fcb5330c4427a2404375aeb7cec1)
+  Thanks [@tomaskukk](https://github.com/tomaskukk)! - Improved type-safety: when a query contains
+  required variables, passing the variables object to the useQuery hook is enforced
+
+## 4.2.0
+
+### Minor Changes
+
+- [#483](https://github.com/dotansimha/graphql-code-generator-community/pull/483)
+  [`ba7e551`](https://github.com/dotansimha/graphql-code-generator-community/commit/ba7e551bd1b9827ceefa05b4b11a900200f3668d)
+  Thanks [@rickdunkin](https://github.com/rickdunkin)! - Apollo Client `useFragment` hook
+
+### Patch Changes
+
+- [#464](https://github.com/dotansimha/graphql-code-generator-community/pull/464)
+  [`fa53f8f`](https://github.com/dotansimha/graphql-code-generator-community/commit/fa53f8f63dea02912fdf4153f32c7f2ae28dae83)
+  Thanks [@namoscato](https://github.com/namoscato)! - fix: loosen defaultBaseOptions type
+
+## 4.1.0
+
+### Minor Changes
+
+- [#392](https://github.com/dotansimha/graphql-code-generator-community/pull/392)
+  [`d86d2052a`](https://github.com/dotansimha/graphql-code-generator-community/commit/d86d2052a00ac5ca63a3a1140cb1419236c85236)
+  Thanks [@Hal-ang](https://github.com/Hal-ang)! - feat: support useSuspenseQuery
+
 ## 4.0.0
 
 ### Major Changes

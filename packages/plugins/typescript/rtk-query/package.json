@@ -1,6 +1,6 @@
 {
   "name": "@graphql-codegen/typescript-rtk-query",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "type": "module",
   "description": "GraphQL Code Generator plugin for injecting graphql endpoints into a preconfigured RTK Query api",
   "repository": {
@@ -37,9 +37,9 @@
     "test": "jest --no-watchman --config ../../../../jest.config.js --forceExit"
   },
   "peerDependencies": {
-    "@reduxjs/toolkit": "^1.6.0",
+    "@reduxjs/toolkit": "^1.6.0 || ^2.0.0",
     "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0",
-    "graphql-request": "^3.4.0 || ^4.0.0 || ^5.0.0",
+    "graphql-request": "^3.4.0 || ^4.0.0 || ^5.0.0 || ^6.0.0",
     "graphql-tag": "^2.0.0"
   },
   "peerDependenciesMeta": {
@@ -55,7 +55,7 @@
     "tslib": "~2.6.0"
   },
   "devDependencies": {
-    "@reduxjs/toolkit": "1.9.6",
+    "@reduxjs/toolkit": "2.2.6",
     "@rtk-query/graphql-request-base-query": "2.2.0",
     "graphql-request": "^4.0.0"
   },
